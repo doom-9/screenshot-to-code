@@ -9,7 +9,7 @@ backend/run_logs/*
 backend/backend/*
 
 # Env vars
-# frontend/.env.local
+frontend/.env.local
 .env
 
 # Mac files
