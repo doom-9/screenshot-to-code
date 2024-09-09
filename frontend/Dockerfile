@@ -1,22 +1,20 @@
-FROM node:22-bullseye-slim
+# NodeJS Version 16
+FROM node:18-slim AS builder
 
-# Set the working directory in the container
+# Copy Dir
+COPY . ./app
+
+# Work to Dir
 WORKDIR /app
 
-# Copy package.json and yarn.lock
-COPY package.json yarn.lock /app/
+# Install Node Package
+RUN yarn install --frozen-lockfile && \
+    yarn run build
 
-# Set the environment variable to skip Puppeteer download
-ENV PUPPETEER_SKIP_DOWNLOAD=true
+FROM pierrezemb/gostatic
 
-# Install dependencies
-RUN yarn install
+EXPOSE 8043
 
-# Copy the current directory contents into the container at /app
-COPY ./ /app/
+COPY --from=builder /app/dist /srv/http/
 
-# Expose port 5173 to access the server
-EXPOSE 5173
-
-# Command to run the application
-CMD ["yarn", "dev", "--host", "0.0.0.0"]
+CMD ["-enable-logging","-fallback","index.html"]
